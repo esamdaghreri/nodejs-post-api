@@ -55,3 +55,26 @@ module.exports.postPost = (req, res, next) => {
       next(error); // In promise, throw error will not work. You have to use next function to reach to next handle middleware.
     });
 };
+
+module.exports.getPost = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then(post => {
+      if(!post) {
+        const error = new Error('Post not found');
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200)
+        .json({
+          message: 'Post fetched.',
+          post: post
+        });
+    })
+    .catch(error => {
+      if(!error.statusCode){
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
