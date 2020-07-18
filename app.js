@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-// Export files
+// Import files
 const feedRoutes = require('./routes/feed');
 
 // Init app
