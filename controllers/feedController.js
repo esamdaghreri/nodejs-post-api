@@ -9,13 +9,24 @@ const fs = require('fs');
 const Post = require('../models/post');
 
 module.exports.getPosts = (req, res, next) => {
-  const posts = Post.find().
-    then(posts => {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
+  Post.find().countDocuments()
+    .then(count => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
+    .then(posts => {
       res.status(200).json({
         message: 'Fetching posts successfully.',
-        posts: posts
+        posts: posts,
+        totalItems: totalItems
       });
-    }).catch(error => {
+    })
+    .catch(error => {
       if(!error.statusCode){
         error.statusCode = 500;
       }
