@@ -29,6 +29,16 @@ app.use((req, res, next) => {
 // Routers
 app.use('/feed', feedRoutes);
 
+// Route for handle error
+app.use((error, req, res, next) => {
+  const status = error.statusCode || 500; // if error.statusCode undefined, use 500 as a default
+  const message = error.message;
+
+  res.status(status).json({
+    message: message
+  });
+});
+
 // Connect to database
 mongoose.connect('')
   .then(result => {

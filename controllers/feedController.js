@@ -29,12 +29,9 @@ module.exports.postPost = (req, res, next) => {
   // Get validation errors
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
-    return res
-      .status(422)
-      .json({
-        message: 'Validation failed, entered data is incorrect.',
-        errors: errors.array()
-      });
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
   }
   // Create new post
   const post = new Post({
@@ -54,6 +51,9 @@ module.exports.postPost = (req, res, next) => {
       });
     })
     .catch(error => {
-      console.log(error);
+      if(!error.statusCode){
+        error.statusCode = 500;
+      }
+      next(error); // In promise, throw error will not work. You have to use next function to reach to next handle middleware.
     });
 };
