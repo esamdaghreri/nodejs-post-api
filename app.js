@@ -5,6 +5,8 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
 
 // Import files
 const feedRoutes = require('./routes/feed');
@@ -12,8 +14,32 @@ const feedRoutes = require('./routes/feed');
 // Init app
 const app = express();
 
+// Setting the file storage
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, uuidv4() + '-' + file.originalname);
+  }
+});
+// Filter the images that only accept: png, jpg and jpeg
+const fileFilter = (req, file, cb) => {
+  if(
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg'
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 // Parser to use json
 app.use(bodyParser.json());
+// Register multer to parse any coming request
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image')); // image => is tha name if input filed
 
 // Serve any request for images folder statically by making a static path
 app.use('/images', express.static(path.join(__dirname, 'images')));

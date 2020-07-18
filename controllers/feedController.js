@@ -20,10 +20,6 @@ module.exports.getPosts = (req, res, next) => {
 };
 
 module.exports.postPost = (req, res, next) => {
-  // Get input from body
-  const title = req.body.title;
-  const content = req.body.content;
-
   // Get validation errors
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
@@ -31,11 +27,22 @@ module.exports.postPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  // Check if image uploaded
+  if(!req.file) {
+    const error = new Error('No image provided.');
+    error.statusCode = 422;
+    throw error;
+  }
+  // Get input from body
+  const imageUrl = req.file.path.replace("\\" ,"/");
+  const title = req.body.title;
+  const content = req.body.content;
+  
   // Create new post
   const post = new Post({
     title: title,
     content: content,
-    imageUrl: 'images/esam.jpg',
+    imageUrl: imageUrl,
     creator: {
       name: 'Esam Daghreri'
     }
