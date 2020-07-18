@@ -5,21 +5,19 @@ const { validationResult } = require('express-validator/check');
 const Post = require('../models/post');
 
 module.exports.getPosts = (req, res, next) => {
-  res.status(200).json({
-    posts: [
-      {
-        _id: '1',
-        title: 'First post',
-        content: 'This is first post',
-        imageUrl: 'images/esam.jpg',
-        creator: {
-            name: 'Esam Daghreri'
-        },
-        createdAt: new Date()
-      },
-    ]
-  });
-}
+  const posts = Post.find().
+    then(posts => {
+      res.status(200).json({
+        message: 'Fetching posts successfully.',
+        posts: posts
+      });
+    }).catch(error => {
+      if(!error.statusCode){
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
 
 module.exports.postPost = (req, res, next) => {
   // Get input from body
