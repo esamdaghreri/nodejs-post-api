@@ -15,6 +15,10 @@ const postSchema = new Schema({
   content: {
     type: String,
     required: true
+  },
+  creator: {
+    type: Object,
+    required: true
   }
 }, {
   timestamps: true
