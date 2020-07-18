@@ -1,6 +1,7 @@
 // Third party libraries
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 // Export files
 const feedRoutes = require('./routes/feed');
@@ -13,14 +14,21 @@ app.use(bodyParser.json());
 
 // Add some header in response for CORS allow any clients to use our api
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'),
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE'),
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'),
-    next();
+  res.setHeader('Access-Control-Allow-Origin', '*'),
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE'),
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'),
+  next();
 });
 
 // Routers
 app.use('/feed', feedRoutes);
 
-// Run the local server at port 8080
-app.listen(8080);
+// Connect to database
+mongoose.connect('')
+  .then(result => {
+    // Run the local server at port 8080
+    app.listen(8080);
+  })
+  .catch(error => {
+    console.log(error);
+  });
