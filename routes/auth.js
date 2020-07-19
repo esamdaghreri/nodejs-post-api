@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 // Import files
 const User = require('../models/user');
 const authController = require('../controllers/authController');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
@@ -36,5 +37,17 @@ router.post('/signup',
 );
 
 router.post('/login', authController.login);
+
+router.get('/status', isAuth, authController.getStatus);
+
+router.put('/status', isAuth, 
+    [
+        body('status')
+        .trim()
+        .not()
+        .isEmpty() 
+    ], 
+    authController.putStatus
+);
 
 module.exports = router;
