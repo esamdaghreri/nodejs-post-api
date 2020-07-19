@@ -4,7 +4,7 @@ const { body } = require('express-validator/check');
 
 const router = express.Router();
 
-// Export files
+// Import files
 const feedController = require('../controllers/feedController');
 
 router.get('/posts', feedController.getPosts);

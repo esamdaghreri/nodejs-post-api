@@ -10,6 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 
 // Import files
 const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 
 // Init app
 const app = express();
@@ -54,19 +55,21 @@ app.use((req, res, next) => {
 
 // Routers
 app.use('/feed', feedRoutes);
+app.use('/auth', authRoutes);
 
 // Route for handle error
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500; // if error.statusCode undefined, use 500 as a default
   const message = error.message;
-
+  const data = error.data;
   res.status(status).json({
-    message: message
+    message: message,
+    data: data
   });
 });
 
 // Connect to database
-mongoose.connect('')
+mongoose.connect('mongodb+srv://esam:8rlWMHFR2cDt5mbi@cluster0.v1w8k.mongodb.net/messages')
   .then(result => {
     // Run the local server at port 8080
     app.listen(8080);
