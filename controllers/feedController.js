@@ -7,6 +7,7 @@ const fs = require('fs');
 
 // Import models
 const Post = require('../models/post');
+const User = require('../models/user');
 
 module.exports.getPosts = (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -52,22 +53,33 @@ module.exports.postPost = (req, res, next) => {
   const imageUrl = req.file.path.replace("\\" ,"/");
   const title = req.body.title;
   const content = req.body.content;
+  let creator;
   
   // Create new post
   const post = new Post({
     title: title,
     content: content,
     imageUrl: imageUrl,
-    creator: {
-      name: 'Esam Daghreri'
-    }
+    creator: req.userId
   });
   // Saving post
   post.save()
     .then(result => {
+      return User.findById(req.userId);
+    })
+    .then(user => {
+      creator = user;
+      user.posts.push(post);
+      return user.save();
+    })
+    .then(result => {
       res.status(201).json({
         message: 'Post has been created!',
-        post: result
+        post: post,
+        creator: {
+          _id: creator._id,
+          name: creator.name
+        }
       });
     })
     .catch(error => {
